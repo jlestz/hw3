@@ -21,12 +21,13 @@ class Newton(object):
         """Return a root of f(x) = 0, using Newton's method, starting from
         initial guess x0"""
         x = x0
-        for i in xrange(self._maxiter):
+        for i in xrange(self._maxiter+1):
             fx = self._f(x)
             if N.linalg.norm(fx) < self._tol:
                 return x
+            elif i == self._maxiter: 
+                raise RuntimeError("No solution found after max_iter iterations"); 
             x = self.step(x, fx)
-        return x
 
     def step(self, x, fx=None):
         """Take a single step of a Newton method, starting from x
@@ -35,4 +36,4 @@ class Newton(object):
             fx = self._f(x)
         Df_x = F.ApproximateJacobian(self._f, x, self._dx)
         h = N.linalg.solve(N.matrix(Df_x), N.matrix(fx))
-        return x + h
+        return x - h

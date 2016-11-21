@@ -4,6 +4,7 @@ import functions as F
 import numpy as N
 import unittest
 
+# tests Jacobian for a 1D linear function 
 class TestFunctions(unittest.TestCase):
     def testApproxJacobian1(self):
         slope = 3.0
@@ -15,6 +16,7 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(Df_x.shape, (1,1))
         self.assertAlmostEqual(Df_x, slope)
 
+# tests Jacobian for a constant function : R^2 --> R^2
     def testApproxJacobian2(self):
         A = N.matrix("1. 2.; 3. 4.")
         def f(x):
@@ -25,6 +27,7 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(Df_x.shape, (2,2))
         N.testing.assert_array_almost_equal(Df_x, A)
 
+# tests Jacobian for a 2nd degree polynomial in 1D 
     def testPolynomial(self):
         # p(x) = x^2 + 2x + 3
         p = F.Polynomial([1, 2, 3])
