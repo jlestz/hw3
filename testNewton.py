@@ -28,7 +28,7 @@ class TestNewton(unittest.TestCase):
         f = lambda x : x + 1.0
         solver = newton.Newton(f, tol=1.e-15,maxiter=2)
         x1 = solver.step(2.0)
-        self.assertEqual(x1,1.0)
+        self.assertAlmostEqual(x1,-1.0)
     
 if __name__ == "__main__":
     unittest.main()
