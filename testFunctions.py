@@ -4,8 +4,8 @@ import functions as F
 import numpy as N
 import unittest
 
-# tests Jacobian for a 1D linear function 
 class TestFunctions(unittest.TestCase):
+# tests Jacobian for a 1D linear function 
     def testApproxJacobian1(self):
         slope = 3.0
         def f(x):
@@ -17,6 +17,7 @@ class TestFunctions(unittest.TestCase):
         self.assertAlmostEqual(Df_x, slope)
 
 # tests Jacobian for a constant function : R^2 --> R^2
+# importantly, this verifies that the Jacobian isn't accidentally transposed 
     def testApproxJacobian2(self):
         A = N.matrix("1. 2.; 3. 4.")
         def f(x):

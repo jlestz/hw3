@@ -23,6 +23,12 @@ class TestNewton(unittest.TestCase):
         else: 
             self.fail('No error raised'); 
         
-
+    # test that the correct step is taken in a known case 
+    def testStep(self): 
+        f = lambda x : x + 1.0
+        solver = newton.Newton(f, tol=1.e-15,maxiter=2)
+        x1 = solver.step(2.0)
+        self.assertEqual(x1,1.0)
+    
 if __name__ == "__main__":
     unittest.main()
