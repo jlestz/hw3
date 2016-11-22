@@ -25,6 +25,8 @@ class Newton(object):
             fx = self._f(x)
             if N.linalg.norm(fx) < self._tol:
                 return x
+            # if i = maxiter, then maxiter steps have already been taken
+            # and no solutions have been found. Raise an error. 
             elif i == self._maxiter: 
                 raise RuntimeError("No solution found after max_iter iterations"); 
             x = self.step(x, fx)
