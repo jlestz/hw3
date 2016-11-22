@@ -12,6 +12,17 @@ class TestNewton(unittest.TestCase):
         x = solver.solve(2.0)
         self.assertEqual(x, -2.0)
 
+
+    # test if correct root is found for trig functions 
+    def testTrig(self):
+        f = lambda x : N.sin(x)
+        g = lambda x : N.cos(x)
+        solver = newton.Newton([f; g], tol=1.e-15, maxiter=2)
+        x = solver.solve([1.0;1.0])
+        self.assertAlmostEqual(x, [0.0, N.Pi/2])
+
+    # test more solutions in different dimensions 
+
     # test if exception is thrown for function with no root 
     def testNoRoot(self): 
         f = lambda x : x**2 + 1.0 
