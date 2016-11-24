@@ -3,13 +3,17 @@ import numpy as N
 def ApproximateJacobian(f, x, dx=1e-6):
     """Return an approximation of the Jacobian Df(x) as a numpy matrix"""
     try:
-        n = len(x)
+        nx = len(x)
     except TypeError:
-        n = 1
+        nx = 1
     fx = f(x)
-    Df_x = N.matrix(N.zeros((n,n)))
-    for i in range(n):
-        v = N.matrix(N.zeros((n,1)))
+    try: 
+        nf = len(fx) 
+    except TypeError: 
+        nf = 1 
+    Df_x = N.matrix(N.zeros((nf,nx)))
+    for i in range(nx):
+        v = N.matrix(N.zeros((nx,1)))
         v[i,0] = dx
         Df_x[:,i] = (f(x + v) - fx)/dx
     return Df_x

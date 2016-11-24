@@ -17,7 +17,7 @@ class TestNewton(unittest.TestCase):
     def testTrig(self):
         f = lambda x : N.sin(x)
         g = lambda x : N.cos(x)
-        solver = newton.Newton([f; g], tol=1.e-15, maxiter=2)
+        solver = newton.Newton([f g], tol=1.e-15, maxiter=2)
         x = solver.solve([1.0;1.0])
         self.assertAlmostEqual(x, [0.0, N.Pi/2])
 

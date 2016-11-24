@@ -30,7 +30,6 @@ class TestFunctions(unittest.TestCase):
 
     # tests Jacobian for a constant function : R^2 --> R^1 
     # (non square Jacobian test)
-# currently fails because shape is not equal...
     def testApproxJacobian3(self): 
         A = N.matrix("1. 2.") 
         def f(x): 
@@ -43,7 +42,6 @@ class TestFunctions(unittest.TestCase):
 
     # tests Jacobian for a constant function : R^1 --> R^2
     # (non square Jacobian test)
-# currently has some error -- need to read up on numpy
     def testApproxJacobian4(self): 
         A = N.matrix("1. ; 2.") 
         def f(x): 
@@ -61,7 +59,16 @@ class TestFunctions(unittest.TestCase):
         for x in N.linspace(-2,2,11):
             self.assertEqual(p(x), x**2 + 2*x + 3)
 
-# test Jacobian against analytically known Jacobian 
+    # test Jacobian against analytically known Jacobian
+# currently broken...
+    def testTrig(self): 
+        def f(x): 
+            return N.exp(1.5*x[0])*N.sin(1.7*x[1])
+        x0 = N.matrix("2.0 ; 1.0")
+        dx=1.e-6
+        Df_x = F.ApproximateJacobian(f,x0,dx)
+        self.assertEqual(Df_x.shape, (1,2))
+        N.testing.assert_array_almost_equal(Df_x,[1.5*N.exp(3.0)*N.sin(1.7),1.7*N.exp(3.0)*N.cos(1.7)]); 
 
 if __name__ == '__main__':
     unittest.main()
