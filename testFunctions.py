@@ -52,23 +52,23 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(Df_x.shape, (2,1))
         N.testing.assert_array_almost_equal(Df_x,A)
 
-    # tests Jacobian for a 2nd degree polynomial in 1D : R^1 --> R^1 
+    # tests the accuracy of polynomial function 
     def testPolynomial(self):
         # p(x) = x^2 + 2x + 3
         p = F.Polynomial([1, 2, 3])
         for x in N.linspace(-2,2,11):
             self.assertEqual(p(x), x**2 + 2*x + 3)
 
-    # test Jacobian against analytically known Jacobian
-# currently broken...
+    # test Jacobian against analytically known Jacobian of elementary functions 
     def testTrig(self): 
         def f(x): 
-            return N.exp(1.5*x[0])*N.sin(1.7*x[1])
+            return N.sin(x[0])*N.cos(x[1])
         x0 = N.matrix("2.0 ; 1.0")
         dx=1.e-6
         Df_x = F.ApproximateJacobian(f,x0,dx)
+        Df_anal = N.matrix([N.cos(2.0)*N.cos(1.0) ,-1.0*N.sin(2.0)*N.sin(x0[1.0])])
         self.assertEqual(Df_x.shape, (1,2))
-        N.testing.assert_array_almost_equal(Df_x,[1.5*N.exp(3.0)*N.sin(1.7),1.7*N.exp(3.0)*N.cos(1.7)]); 
+        N.testing.assert_array_almost_equal(Df_x,Df_anal); 
 
 if __name__ == '__main__':
     unittest.main()
