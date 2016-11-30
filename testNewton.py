@@ -3,25 +3,38 @@
 import newton
 import unittest
 import numpy as N
+from scipy import special
 
 class TestNewton(unittest.TestCase):
     # test if correct root is found for linear function : R^1 --> R^1
     def testLinear(self):
         f = lambda x : 3.0 * x + 6.0
-        solver = newton.Newton(f, tol=1.e-15, maxiter=2)
+        solver = newton.Newton(f, tol=1.e-15, maxiter=10)
         x = solver.solve(2.0)
         self.assertEqual(x, -2.0)
 
-
-    # test if correct root is found for trig functions 
+    # test if correct root is found for trig functions  
     def testTrig(self):
         f = lambda x : N.sin(x)
         g = lambda x : N.cos(x)
-        solver = newton.Newton([f g], tol=1.e-15, maxiter=2)
-        x = solver.solve([1.0;1.0])
-        self.assertAlmostEqual(x, [0.0, N.Pi/2])
+        solver = newton.Newton(f, tol=1.e-15, maxiter=10)
+        x = solver.solve(1.0)
+        solver = newton.Newton(g, tol=1.e-15,maxiter=10) 
+        y=solver.solve(1.0)
+        self.assertAlmostEqual(x,0.0)
+        self.assertAlmostEqual(y,N.pi/2)
 
-    # test more solutions in different dimensions 
+# test if correct root is found for Airy function 
+    def testAiry(self):
+        def fAiry(x):
+            f = special.airy(x)
+            return f[0]
+        f = fAiry
+        solver=newton.Newton(f, tol=1.e-15,maxiter=100)
+        x = solver.solve(-1.5)
+        x0 = special.ai_zeros(1)
+        x0 = x0[0]
+        self.assertAlmostEqual(x,x0)
 
     # test if exception is thrown for function with no root 
     def testNoRoot(self): 

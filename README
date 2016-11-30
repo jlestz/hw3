@@ -1,0 +1,15 @@
+Readme for APC 524 HW3 
+Author: Jeff Lestz
+Last Modified: 29 November 2016 
+
+This directory contains the following 4 files
+
+newton.py: Newton class which contains methods to find zeros using Newton's method 
+
+testNewton.py: unit tests to ensure that Newton solver works as expected 
+
+functions.py: functions to calculate numerical Jacobian and construct polynomials
+
+testFunction.py: unit tests to ensure that the functions in functions.py return what they promise
+ 
+
