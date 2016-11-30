@@ -11,5 +11,6 @@ testNewton.py: unit tests to ensure that Newton solver works as expected
 functions.py: functions to calculate numerical Jacobian and construct polynomials
 
 testFunction.py: unit tests to ensure that the functions in functions.py return what they promise
- 
+
+To add: explanation of how to run each code  
 

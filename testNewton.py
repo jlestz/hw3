@@ -24,7 +24,7 @@ class TestNewton(unittest.TestCase):
         self.assertAlmostEqual(x,0.0)
         self.assertAlmostEqual(y,N.pi/2)
 
-# test if correct root is found for Airy function 
+    # test if correct root is found for Airy function 
     def testAiry(self):
         def fAiry(x):
             f = special.airy(x)
@@ -54,5 +54,30 @@ class TestNewton(unittest.TestCase):
         x1 = solver.step(2.0)
         self.assertAlmostEqual(x1,-1.0)
     
+    # verify that r = 0 always halts Newton Solver
+    def testRadiusZero(self): 
+        f = lambda x : x + 1.0
+        solver = newton.Newton(f,r=0.0)
+        try: 
+            x = solver.solve(1.0) 
+        except RuntimeError: 
+            pass 
+        else: 
+            self.fail('No error raised'); 
+
+    # test for a constant function (no root, singular Jacobian)
+    # should throw exception since singular Jacobian breaks method
+    def testConstant(self): 
+        f = lambda x: 1.0
+        solver = newton.Newton(f)
+        try: 
+            x = solver.solve(1.0) 
+        except N.linalg.LinAlgError: 
+            pass 
+        else: 
+            self.fail('No error raised'); 
+
+    # verify 
+
 if __name__ == "__main__":
     unittest.main()
