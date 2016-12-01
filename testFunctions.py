@@ -70,6 +70,59 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(Df_x.shape, (1,2))
         N.testing.assert_array_almost_equal(Df_x,Df_anal); 
 
+    # test convergence of numerical Jacobian to analytic function
+    # as dx decreases, numerical error should decrease 
+    def testAnalConvergence(self): 
+        x0=1.0
+        DfAnal=N.cos(x0)
+        Df1=N.zeros(4)
+        Ddiff=Df1
+        steps = N.array([1e-2,1e-4,1e-6,1e-8])
+        for i,val in enumerate(steps): 
+            Df1[i] = F.ApproximateJacobian(N.sin,x0,dx=val)
+            Ddiff=N.absolute(Df1-DfAnal)
+            if i > 0:  
+                self.assertLess(Ddiff[i],Ddiff[i-1])
+
+    # test the PolyLog class for correct values  
+    def testPolyLogVals(self):
+        # check values when PolyLog reduces to Log
+        p = F.PolyLog([1],1)
+        self.assertEqual(p(1.0),0.0)
+        self.assertEqual(p.Df(1.0),1.0)
+        
+        # check values when PolyLog reduces to Polynomial
+        p = F.PolyLog([1,2,3],0)
+        self.assertEqual(p(1.0),6.0)
+        self.assertEqual(p.Df(1.5),5.0)
+
+        # check values when PolyLog is a nontrivial product 
+        """p = F.PolyLog([1,-2,3],3)
+        self.assertAlmostEqual(p(1.1),  0.00174026)
+        self.assertAlmostEqual(p.Df(1.1),0.0499702)"""
+        p = F.PolyLog([1, 0],1)
+        x0=1.1
+        self.assertEqual(p(x0),x0*N.log(x0))
+        self.assertEqual(p.Df(x0),1 + N.log(x0))
+        # THERE IS A REAL BUG IN THE DERIVATIVE 
+
+    # test the ExpSin class for correct values 
+    def testExpSinVals(self): 
+        # test 1D case 
+        p = F.ExpSin(1)
+        x0=0.5
+        x1=0.2
+        self.assertAlmostEqual(p([x0]),N.exp(-x0**2)*N.sin(x0))
+        self.assertAlmostEqual(p.Df([x1]),N.exp(-x1**2)*(-2*x1*N.sin(x1) + N.cos(x1)))
+        # test 2D case at x = [0,0] (possible edge case)
+        p = F.ExpSin(2)
+        x0=[0.0,0.0]
+        self.assertEqual(p(x0),0.0)
+        Df = p.Df(x0)
+        print(Df) # THERE IS A REAL BUG IN THE DERIVATIVE
+        # THIS GIVES BACK [1,1] INSTEAD OF [0,0]
+        self.assertEqual(Df,[0.0,0.0])
+
 if __name__ == '__main__':
     unittest.main()
 

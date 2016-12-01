@@ -170,5 +170,21 @@ class TestNewton(unittest.TestCase):
         else: 
             self.assertAlmostEqual(x,1.0)
 
+    # test analytic Jacobian: does it even run with new syntax
+    def testAnalSin(self): 
+        x0=1.0 
+        solver = newton.Newton(N.sin,Df=N.cos)
+        x = solver.solve(x0)
+        self.assertAlmostEqual(x,0.0)
+
+    # test if analytic Jacobian is used
+    # do the first steps differ? 
+    def testAnalVsNum(self): 
+        x0=0.5
+        p = F.PolyLog([1,6,8],2); 
+        dp = F.Df
+        solver = newton.Newton(F.PolyLog([1 6 8],2),
+    
+
 if __name__ == "__main__":
     unittest.main()

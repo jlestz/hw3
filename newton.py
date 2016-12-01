@@ -7,17 +7,20 @@ import numpy as N
 import functions as F
 
 class Newton(object):
-    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, r=float("inf")):
+    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, r=float("inf"), Df=None):
         """Return a new object to find roots of f(x) = 0 using Newton's method.
         tol:     tolerance for iteration (iterate until |f(x)| < tol)
         maxiter: maximum number of iterations to perform
         dx:      step size for computing approximate Jacobian
-        r: maximum search radius (exception thrown if |x_k - x0|>r)"""
+        r: maximum search radius (exception thrown if |x_k - x0|>r)
+        Df: optional argument specifying analytic Jacobian"""
         self._f = f
         self._tol = tol
         self._maxiter = maxiter
         self._dx = dx
         self._r = r
+        self._Df = Df
+
 
     def solve(self, x0):
         """Return a root of f(x) = 0, using Newton's method, starting from
@@ -42,6 +45,14 @@ class Newton(object):
         If the argument fx is provided, assumes fx = f(x)"""
         if fx is None:
             fx = self._f(x)
-        Df_x = F.ApproximateJacobian(self._f, x, self._dx)
+        
+        Df = self._Df
+        if Df is None: 
+            # use numerical Jacobian 
+            Df_x = F.ApproximateJacobian(self._f, x, self._dx)
+        else: 
+            # analytic Jacobian option 
+            Df_x = Df(x) 
+
         h = N.linalg.solve(N.matrix(Df_x), N.matrix(fx))
         return x - h
