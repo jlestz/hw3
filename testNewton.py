@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import newton
+import functions as F 
 import unittest
 import numpy as N
 from scipy import special
@@ -178,12 +179,27 @@ class TestNewton(unittest.TestCase):
         self.assertAlmostEqual(x,0.0)
 
     # test if analytic Jacobian is used
-    # do the first steps differ? 
-    def testAnalVsNum(self): 
-        x0=0.5
-        p = F.PolyLog([1,6,8],2); 
-        dp = F.Df
-        solver = newton.Newton(F.PolyLog([1 6 8],2),
+    # 1. do the first steps differ? 
+    # 2. do they arrive at the same solution? 
+    def testPolyLogAnalVsNum(self): 
+        # function (x-2)(x-4)log^2(x) has zeros at x=1,2,4
+        x0=1.7
+        p = F.PolyLog([1,-6,8],2); 
+
+        dp = p.Df
+        solverAnal = newton.Newton(p,tol=1.e-15,Df=dp)
+        x1Anal=solverAnal.step(x0) 
+        xSolAnal = solverAnal.solve(x0)
+
+        solverNum = newton.Newton(p,tol=1.e-15,dx=1.e-8) 
+        x1Num = solverNum.step(x0)
+        xSolNum = solverNum.solve(x0) 
+
+        self.assertNotEqual(x1Anal,x1Num) 
+        self.assertEqual(xSolAnal,xSolNum)
+
+        
+        
     
 
 if __name__ == "__main__":

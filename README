@@ -17,6 +17,8 @@ To add: explanation of how to run each code
 Left TO DO: 
 1. Improve Readme to give instructions on how to run code, special cases, etc 
 2. Improve Readme to enumerate which tests demonstrate features required in the hw specs
-3. Fix Df for PolyLog and ExpSin 
-4. Add tests to show that zeros are found for these complex functions
-5. Anything else? 
+3. ExpSin jacobian test failing analytic vs numerical due to some strange horz vs vert vector values... 
+4. add testExpSinAnalvsNum solutions in testNewton
+5. Add tests to show that zeros are found for these complex functions
+6. Verify no missing tests from the specs
+

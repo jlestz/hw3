@@ -12,8 +12,10 @@ def ApproximateJacobian(f, x, dx=1e-6):
     except TypeError: 
         nf = 1 
     Df_x = N.matrix(N.zeros((nf,nx)))
+    
+    # there is some conflict here when x is a vector? horz vs vert?
     for i in range(nx):
-        v = N.matrix(N.zeros((nx,1)))
+        v = N.matrix(N.ones((nx,1)))
         v[i,0] = dx
         Df_x[:,i] = (f(x + v) - fx)/dx
     return Df_x
@@ -105,7 +107,11 @@ class ExpSin(object):
         sumSq = 0 # sum of squares of variables (argument to exp)
         prod = 1 # product of variables (argument to sin)
         for i in range(self._dimen): 
-            sumSq = sumSq + x[i]**2 
+            try: 
+                sumSq = sumSq + x[i]**2 
+            except: 
+                print(x[i]) 
+
             prod = prod*x[i]
 
         return N.exp(-sumSq)*N.sin(prod)

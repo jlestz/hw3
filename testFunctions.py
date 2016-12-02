@@ -84,6 +84,32 @@ class TestFunctions(unittest.TestCase):
             if i > 0:  
                 self.assertLess(Ddiff[i],Ddiff[i-1])
 
+    # test that analytic Jacobians are close to numerical
+    # check that they match to 6 decimals when calculating Numerical Jacobian with dx = 1e-12 precision (they should agree to this precision)
+    def checkAnalJacobian(self,fun,x):
+        dx=1e-6
+        DfAnal = fun.Df(x)
+        DfNum = F.ApproximateJacobian(fun,x,dx=dx)
+        #print("x = " + str(x))
+        #print("DfAnal = " + str(DfAnal))
+        #print("DfNum = " + str(DfNum))
+        N.testing.assert_allclose(DfNum,DfAnal,rtol=10*dx,atol=10*dx)
+
+    def testPolynomialJacobian(self): 
+        for x in range(-10,10): 
+            self.checkAnalJacobian(F.Polynomial([3,0,4]),x)
+
+    def testPolyLogJacobian(self): 
+        for x in N.linspace(0.1,2,10):
+            self.checkAnalJacobian(F.PolyLog([5,1,2],3),x)
+
+# this one is broken due to conflict in vert vs horz arrays in 
+# ApproximateJacobian. ApproximateJacobian looks wrong overall...
+    def testExpSinJacobian(self): 
+        for x in N.linspace(-2*N.pi,2*N.pi,20): 
+            for y in N.linspace(-2*N.pi,2*N.pi,20):
+                self.checkAnalJacobian(F.ExpSin(2),[x,y])
+
     # test the PolyLog class for correct values  
     def testPolyLogVals(self):
         # check values when PolyLog reduces to Log
