@@ -66,7 +66,7 @@ class PolyLog(object):
         pcoeffs[0]=1
         # self._log is the polynomial x^power 
         # will be composed with log in computations
-        self._log = Polynomial(pcoeffs)
+        self._logPolynomial = Polynomial(pcoeffs)
 
     def __repr__(self):
         polyrepr = repr(self._poly) 
@@ -74,18 +74,18 @@ class PolyLog(object):
         return polyrepr + logrepr
 
     def f(self,x):
-        flog = self._log
+        flogPolynomial = self._logPolynomial
         fpoly = self._poly 
-        return flog(N.log(x))*fpoly(x)
+        return flogPolynomial(N.log(x))*fpoly(x)
 
     def Df(self,x):
-        flog = self._log 
+        flogPolynomial = self._logPolynomial
         fpoly = self._poly 
 
-        dflog = flog.Df(N.log(x))/x
+        dflog = flogPolynomial.Df(N.log(x))/x
         dfpoly = fpoly.Df(x)
 
-        return fpoly.f(x)*dflog + dfpoly*flog(x)
+        return fpoly.f(x)*dflog + dfpoly*flogPolynomial(N.log(x))
     
     def __call__(self, x):
         return self.f(x)

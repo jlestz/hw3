@@ -104,7 +104,6 @@ class TestFunctions(unittest.TestCase):
         x0=1.1
         self.assertEqual(p(x0),x0*N.log(x0))
         self.assertEqual(p.Df(x0),1 + N.log(x0))
-        # THERE IS A REAL BUG IN THE DERIVATIVE 
 
     # test the ExpSin class for correct values 
     def testExpSinVals(self): 
@@ -114,14 +113,15 @@ class TestFunctions(unittest.TestCase):
         x1=0.2
         self.assertAlmostEqual(p([x0]),N.exp(-x0**2)*N.sin(x0))
         self.assertAlmostEqual(p.Df([x1]),N.exp(-x1**2)*(-2*x1*N.sin(x1) + N.cos(x1)))
-        # test 2D case at x = [0,0] (possible edge case)
-        p = F.ExpSin(2)
-        x0=[0.0,0.0]
+
+        # test 6D case (arbitrary dimension) at x = zeros (possible edge case)
+        dimen=6
+        p = F.ExpSin(dimen)
+        x0=N.zeros(dimen)
         self.assertEqual(p(x0),0.0)
         Df = p.Df(x0)
-        print(Df) # THERE IS A REAL BUG IN THE DERIVATIVE
-        # THIS GIVES BACK [1,1] INSTEAD OF [0,0]
-        self.assertEqual(Df,[0.0,0.0])
+        sol = N.matrix(N.ones(dimen))
+        N.testing.assert_array_almost_equal(Df, sol)
 
 if __name__ == '__main__':
     unittest.main()
