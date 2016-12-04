@@ -2,24 +2,85 @@ Readme for APC 524 HW3
 Author: Jeff Lestz
 Last Modified: 4 December 2016 
 
-This directory contains the following 4 files
+This directory contains the following 4 python files: newton.py, testNewton.py, functions.py, testFunctions.py. Together, newton.py and functions.py implement a Newton-Raphson solver for functions R^N --> R^M, N,M positive integers. testNewton.py contains unit tests to test specific features of newton.py. testFunctions.py does the same for functions.py
 
-newton.py: Newton class which contains methods to find zeros using Newton's method 
+=================
+=== newton.py ===
+=================
+newton.py defines the Newton class, which contains the actual solver. A sample initialization call: 
+~~~
+solver = newton.Newton(f,tol=tol,maxiter=maxiter,dx=dx,Df=Df)
+~~~
+f is the function to solve 
+tol is the tolerance of the zero finder (halts when |f(x_k)| < tol
+maxiter is the maximum number of steps before stopping 
+dx is the step size used to compute an approximate Jacobian, if no analytic Jacobian is specified 
+Df is the function to use to compute the Jacobian of f. If Df is not specified, a numerical approximation (implemented in functions.py) will be used.
 
-testNewton.py: unit tests to ensure that Newton solver works as expected 
+With solver initialized as above, f(x) = 0 will be solved by calling: 
+~~~ 
+xsol=solver.solve(x0,r=rsearch)
+~~~ 
+x0 is the initialize guess, passed as an array-like variable (numpy.array, numpy.matrix, etc) 
+r is an optional argument specifying the distance to search near the initialize guess before failure (halts when (|x_k - x0| > r)). Due to the nature of zero finding, it is possible to have solutions exist with |x_sol -x0| < r that are not found due to some intermediate steps exceeding the boundary. 
 
-functions.py: functions to calculate numerical Jacobian and construct polynomials
+Alternatively, it is also possible to take a single Newton-Raphson step: 
+~~~ 
+x1 = solver.step(x0,fx=fx)
+~~~ 
+x0 is the initialize guess
+fx is the value of the function f(x) to solve. If fx is not specified, the value of the function stored in the solver, self._f(x), is used. 
 
-testFunction.py: unit tests to ensure that the functions in functions.py return what they promise
+newton.solve loops over newton.step until one of the following conditions is reached (in order of precedence): 
+1. Search radius is exceeded ( |x_k - x0| > r ) 
+2. Numerical zero is found ( |f(x_k)| < tol ) 
+3. Maximum number of iterations is reached ( k > maxiter)
+Outcomes (1) and (3) each raise a RuntimeError, while (2) returns x_k. 
+Below is an exampe which returns xsol=-1.26e-08. Note that restricting to r=1 leads to no solution here, despite |xsol-x0| < 1. 
+~~~
+import numpy as N
+x0=N.pi/4
+solver=newton.Newton(N.sin,tol=1.e-6,maxiter=20,dx=1.e-6)
+xsol=solver.solve(x0,r=2)
+~~~
 
-To add: explanation of how to run each code  
+====================
+=== functions.py ===
+====================
 
-Left TO DO: 
-1. Improve Readme to give instructions on how to run code, special cases, etc 
-2. Improve Readme to enumerate which tests demonstrate features required in the hw specs
-3. ExpSin jacobian test failing analytic vs numerical due to some strange horz vs vert vector values... 
-4. add testExpSinAnalvsNum solutions in testNewton
-5. Add tests to show that zeros are found for these complex functions
-6. Verify no missing tests from the specs
+functions.py contains functions to compute Jacobians numerically, polynomials, and two special functions: "PolyLog"s and "ExpSin"s. 
 
-Instructions: ExpSin must take in a list, not a matrix(?)
+To compute a numerical Jacobian (first order accurate, forward difference), call: 
+~~~ 
+dF = ApproximateJacobian(f,x,dx=dx)
+~~~ 
+f is the function whose Jacobian you want to calculate numerically
+x is the point to evaluate the Jacobian at 
+dx is the step size to use in the forward difference method 
+
+Polynomial, PolyLog, and ExpSin classes each have the following functions: 
+1. f(x) -- returns the function at x (duplicated by __call__) 
+2. Df(x) -- returns the analytic Jacobian at x
+Each of these functions can be evaluated at x specified by a numpy array or matrix of the correct dimension. 
+
+Polynomial(coeffs) is a polynomial object of a single variable defined by: 
+    P(x) = sum_{i=0}^{N-1} coeffs(i) * x^{N-1-i}
+
+PolyLog(coeffs,power) is a product of a polynomial and a (natural) logarithm raised to a power (each of a single variable) defined by: 
+    P(x) = sum_{i=0}^{N-1} coeffs(i) * x^{N-1-i} * log^power(x)
+
+ExpSin(dimen) is a product of exponential decay and a sin function in n dimensions defined by: 
+    P(x) = exp(-sum_{i=0}^{dimen-1} x_i^2) * sin(prod_{i=0}^{dimen-1} x_i)
+
+=====================
+=== testNewton.py ===
+=====================
+
+testNewton.py contains unit tests for the functions in newton.py. The tests are grouped by functionality below: 
+
+1. 
+
+2. 
+
+3. 
+

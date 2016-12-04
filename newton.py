@@ -7,7 +7,7 @@ import numpy as N
 import functions as F
 
 class Newton(object):
-    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, r=float("inf"), Df=None):
+    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, Df=None):
         """Return a new object to find roots of f(x) = 0 using Newton's method.
         tol:     tolerance for iteration (iterate until |f(x)| < tol)
         maxiter: maximum number of iterations to perform
@@ -18,15 +18,13 @@ class Newton(object):
         self._tol = tol
         self._maxiter = maxiter
         self._dx = dx
-        self._r = r
         self._Df = Df
 
 
-    def solve(self, x0):
+    def solve(self, x0, r=float("inf")):
         """Return a root of f(x) = 0, using Newton's method, starting from
         initial guess x0"""
         x = x0
-        r = self._r
         for i in xrange(self._maxiter+1):
             fx = self._f(x)
             # if |x - x0| > r, throw an exception 

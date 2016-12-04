@@ -78,10 +78,6 @@ class TestFunctions(unittest.TestCase):
     def checkAnalJacobian(self,fun,x,dx=1e-6):
         DfAnal = fun.Df(x)
         DfNum = F.ApproximateJacobian(fun,x,dx=dx)
-        # print(N.matrix(x)/N.pi)
-        # print(DfAnal)
-        # print(DfNum)
-        # print("")
         N.testing.assert_allclose(DfNum,DfAnal,rtol=10*dx,atol=10*dx)
 
     def testPolynomialJacobian(self):
@@ -93,7 +89,7 @@ class TestFunctions(unittest.TestCase):
             self.checkAnalJacobian(F.PolyLog([5,1,2],3),x)
 
     def testExpSinJacobian(self):
-        testvals=N.linspace(-2*N.pi,2*N.pi,10); 
+        testvals=N.linspace(-2*N.pi,2*N.pi,20); 
         for x in testvals:
             for y in testvals:
                 self.checkAnalJacobian(F.ExpSin(2),[x,y],1.e-6)

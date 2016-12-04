@@ -92,9 +92,9 @@ class TestNewton(unittest.TestCase):
     # verify that r = 0 always halts Newton Solver
     def testRadiusZero(self): 
         f = lambda x : x + 1.0
-        solver = newton.Newton(f,r=0.0)
+        solver = newton.Newton(f)
         try: 
-            x = solver.solve(1.0) 
+            x = solver.solve(1.0,r=0.0) 
         except RuntimeError: 
             pass 
         else: 
@@ -117,10 +117,10 @@ class TestNewton(unittest.TestCase):
     # maxiters = 3 should fail before r = 4 for x0 = 0
     def testExpMaxIters(self): 
         f = lambda x: N.exp(x)
-        solver = newton.Newton(f,tol=1.e-15,maxiter=3,r=4) 
+        solver = newton.Newton(f,tol=1.e-15,maxiter=3) 
         x0=0.0
         try: 
-            x = solver.solve(x0) 
+            x = solver.solve(x0,r=4) 
         except RuntimeError as err: 
             if "maxiter" in err.message: 
                 pass 
@@ -134,10 +134,10 @@ class TestNewton(unittest.TestCase):
     # maxiters = 4 should not fail before r = 3 for x0 = 0
     def testExpMaxRadius(self): 
         f = lambda x: N.exp(x)
-        solver = newton.Newton(f,tol=1.e-15,maxiter=4,r=3) 
+        solver = newton.Newton(f,tol=1.e-15,maxiter=4) 
         x0=0.0
         try: 
-            x = solver.solve(x0) 
+            x = solver.solve(x0,r=3) 
         except RuntimeError as err: 
             if "radius r" in err.message: 
                 pass 
@@ -149,10 +149,10 @@ class TestNewton(unittest.TestCase):
     # test if radius exception is thrown when some intermediate steps leave the search radius even if the roots are known to be within search radius. f(x) = x^2 - 1 has roots at x = +/- 1, but an initial guess of x0=0.1 leads to a first step of x0 near 5, clearly beyond a radius of 2, despite the fact that subsequent steps would lead to convergence at x = 1
     def testStepBeyondSearch(self): 
         f = lambda x: x**2 - 1 
-        solver = newton.Newton(f,r=2,maxiter=10) 
+        solver = newton.Newton(f,maxiter=10) 
         x0=0.1 
         try: 
-            x = solver.solve(x0) 
+            x = solver.solve(x0,r=2) 
         except RuntimeError: 
             pass 
         else: 
@@ -162,10 +162,10 @@ class TestNewton(unittest.TestCase):
     # since the first step has the largest error, the solver will converge on the correct solution 
     def testStepBeyondSearchSuccess(self): 
         f = lambda x: x**2 - 1 
-        solver = newton.Newton(f,r=5,maxiter=10) 
+        solver = newton.Newton(f,maxiter=10) 
         x0=0.1 
         try: 
-            x = solver.solve(x0) 
+            x = solver.solve(x0,r=5) 
         except RuntimeError: 
             self.fail('Error raised erroneously')
         else: 
@@ -197,10 +197,6 @@ class TestNewton(unittest.TestCase):
 
         self.assertNotEqual(x1Anal,x1Num) 
         self.assertEqual(xSolAnal,xSolNum)
-
-        
-        
-    
 
 if __name__ == "__main__":
     unittest.main()
