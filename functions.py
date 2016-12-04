@@ -3,19 +3,21 @@ import numpy as N
 def ApproximateJacobian(f, x, dx=1e-6):
     """Return an approximation of the Jacobian Df(x) as a numpy matrix"""
     try:
-        nx = len(x)
+        nx = N.size(x)
     except TypeError:
         nx = 1
     fx = f(x)
     try: 
-        nf = len(fx) 
+        nf = N.size(fx) 
     except TypeError: 
         nf = 1 
     Df_x = N.matrix(N.zeros((nf,nx)))
     
-    # there is some conflict here when x is a vector? horz vs vert?
+    # there may be a conflict in x+v if x is a column/row vector
+    # with v (below) a row/column vector, so reshape x to match v
+    x = N.reshape(N.matrix(x),(nx,1))
     for i in range(nx):
-        v = N.matrix(N.ones((nx,1)))
+        v = N.matrix(N.zeros((nx,1)))
         v[i,0] = dx
         Df_x[:,i] = (f(x + v) - fx)/dx
     return Df_x
@@ -104,36 +106,36 @@ class ExpSin(object):
     # can not be called with x as a scalar
     # in 1D, should be called like f([5]) or x =[5], f(x)
     def f(self,x):
+        x = N.matrix(x);
+        x = N.reshape(x,(self._dimen,1)); 
         sumSq = 0 # sum of squares of variables (argument to exp)
         prod = 1 # product of variables (argument to sin)
         for i in range(self._dimen): 
-            try: 
-                sumSq = sumSq + x[i]**2 
-            except: 
-                print(x[i]) 
-
-            prod = prod*x[i]
+            sumSq = sumSq + x[i,0]**2 
+            prod = prod * x[i,0]
 
         return N.exp(-sumSq)*N.sin(prod)
 
     def Df(self,x):
+        x = N.matrix(x); 
+        x = N.reshape(x,(self._dimen,1)); 
         nx = self._dimen
         Df_x = N.matrix(N.zeros((1,nx)))
         sumSq = 0
         prod = 1
         for i in range(nx): 
-            sumSq = sumSq + x[i]**2
-            prod = prod*x[i]
+            sumSq = sumSq + x[i,0]**2
+            prod = prod*x[i,0]
         for i in range(nx): 
             if x[i] > 1e-10: 
-                Df_x[0,i] = N.exp(-sumSq)*(-2*x[i]*N.sin(prod) + prod*N.cos(prod)/x[i])
+                Df_x[0,i] = N.exp(-sumSq)*(-2*x[i,0]*N.sin(prod) + prod*N.cos(prod)/x[i,0])
             # since partial derivative w.r.t x_i has a term like prod/x_i, x_i = 0 case is treated separately
             else: 
                 subProd = 1
                 for j in range(nx): 
                     if j != i: 
-                        prod = prod*x[j]
-                Df_x[0,i] = N.exp(-sumSq)*(-2*x[i]*N.sin(prod) + subProd*N.cos(prod))
+                        prod = prod*x[j,0]
+                Df_x[0,i] = N.exp(-sumSq)*(-2*x[i,0]*N.sin(prod) + subProd*N.cos(prod))
 
         return Df_x
     

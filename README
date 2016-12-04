@@ -22,3 +22,4 @@ Left TO DO:
 5. Add tests to show that zeros are found for these complex functions
 6. Verify no missing tests from the specs
 
+Instructions: ExpSin must take in a list, not a matrix(?)

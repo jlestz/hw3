@@ -59,17 +59,6 @@ class TestFunctions(unittest.TestCase):
         for x in N.linspace(-2,2,11):
             self.assertEqual(p(x), x**2 + 2*x + 3)
 
-    # test Jacobian against analytically known Jacobian of elementary functions 
-    def testTrig(self): 
-        def f(x): 
-            return N.sin(x[0])*N.cos(x[1])
-        x0 = N.matrix("2.0 ; 1.0")
-        dx=1.e-6
-        Df_x = F.ApproximateJacobian(f,x0,dx)
-        Df_anal = N.matrix([N.cos(2.0)*N.cos(1.0) ,-1.0*N.sin(2.0)*N.sin(x0[1.0])])
-        self.assertEqual(Df_x.shape, (1,2))
-        N.testing.assert_array_almost_equal(Df_x,Df_anal); 
-
     # test convergence of numerical Jacobian to analytic function
     # as dx decreases, numerical error should decrease 
     def testAnalConvergence(self): 
@@ -90,9 +79,6 @@ class TestFunctions(unittest.TestCase):
         dx=1e-6
         DfAnal = fun.Df(x)
         DfNum = F.ApproximateJacobian(fun,x,dx=dx)
-        #print("x = " + str(x))
-        #print("DfAnal = " + str(DfAnal))
-        #print("DfNum = " + str(DfNum))
         N.testing.assert_allclose(DfNum,DfAnal,rtol=10*dx,atol=10*dx)
 
     def testPolynomialJacobian(self): 
@@ -103,8 +89,6 @@ class TestFunctions(unittest.TestCase):
         for x in N.linspace(0.1,2,10):
             self.checkAnalJacobian(F.PolyLog([5,1,2],3),x)
 
-# this one is broken due to conflict in vert vs horz arrays in 
-# ApproximateJacobian. ApproximateJacobian looks wrong overall...
     def testExpSinJacobian(self): 
         for x in N.linspace(-2*N.pi,2*N.pi,20): 
             for y in N.linspace(-2*N.pi,2*N.pi,20):
@@ -123,13 +107,35 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(p.Df(1.5),5.0)
 
         # check values when PolyLog is a nontrivial product 
-        """p = F.PolyLog([1,-2,3],3)
+        p = F.PolyLog([1,-2,3],3)
         self.assertAlmostEqual(p(1.1),  0.00174026)
-        self.assertAlmostEqual(p.Df(1.1),0.0499702)"""
+        self.assertAlmostEqual(p.Df(1.1),0.0499702)
         p = F.PolyLog([1, 0],1)
         x0=1.1
         self.assertEqual(p(x0),x0*N.log(x0))
         self.assertEqual(p.Df(x0),1 + N.log(x0))
+
+    # test that ExpSin works for all all input types (list, array, matrix)
+    def testExpSinInput(self): 
+        # choose 3D input 
+        p=F.ExpSin(3)
+        
+        # input types: list, array, matrix
+        x=[0,-5,N.pi/2]; 
+        xarr=N.array(x); 
+        xmat=N.matrix(x); 
+        
+        # test equal values 
+        self.assertEqual(p(x),p(xarr)); 
+        self.assertEqual(p(xarr),p(xmat)); 
+
+        # test equal analytic Jacobians 
+        N.testing.assert_array_almost_equal(p.Df(x),p.Df(xarr))
+        N.testing.assert_array_almost_equal(p.Df(xarr),p.Df(xmat))
+        
+        # test equal numerical Jacobians 
+        N.testing.assert_array_almost_equal(F.ApproximateJacobian(p,x),F.ApproximateJacobian(p,xarr))
+        N.testing.assert_array_almost_equal(F.ApproximateJacobian(p,xarr),F.ApproximateJacobian(p,xmat))
 
     # test the ExpSin class for correct values 
     def testExpSinVals(self): 
