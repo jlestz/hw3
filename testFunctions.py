@@ -75,13 +75,16 @@ class TestFunctions(unittest.TestCase):
 
     # test that analytic Jacobians are close to numerical
     # check that they match to 6 decimals when calculating Numerical Jacobian with dx = 1e-12 precision (they should agree to this precision)
-    def checkAnalJacobian(self,fun,x):
-        dx=1e-6
+    def checkAnalJacobian(self,fun,x,dx=1e-6):
         DfAnal = fun.Df(x)
         DfNum = F.ApproximateJacobian(fun,x,dx=dx)
+        # print(N.matrix(x)/N.pi)
+        # print(DfAnal)
+        # print(DfNum)
+        # print("")
         N.testing.assert_allclose(DfNum,DfAnal,rtol=10*dx,atol=10*dx)
 
-    def testPolynomialJacobian(self): 
+    def testPolynomialJacobian(self):
         for x in range(-10,10): 
             self.checkAnalJacobian(F.Polynomial([3,0,4]),x)
 
@@ -89,10 +92,11 @@ class TestFunctions(unittest.TestCase):
         for x in N.linspace(0.1,2,10):
             self.checkAnalJacobian(F.PolyLog([5,1,2],3),x)
 
-    def testExpSinJacobian(self): 
-        for x in N.linspace(-2*N.pi,2*N.pi,20): 
-            for y in N.linspace(-2*N.pi,2*N.pi,20):
-                self.checkAnalJacobian(F.ExpSin(2),[x,y])
+    def testExpSinJacobian(self):
+        testvals=N.linspace(-2*N.pi,2*N.pi,10); 
+        for x in testvals:
+            for y in testvals:
+                self.checkAnalJacobian(F.ExpSin(2),[x,y],1.e-6)
 
     # test the PolyLog class for correct values  
     def testPolyLogVals(self):
@@ -143,8 +147,8 @@ class TestFunctions(unittest.TestCase):
         p = F.ExpSin(1)
         x0=0.5
         x1=0.2
-        self.assertAlmostEqual(p([x0]),N.exp(-x0**2)*N.sin(x0))
-        self.assertAlmostEqual(p.Df([x1]),N.exp(-x1**2)*(-2*x1*N.sin(x1) + N.cos(x1)))
+        self.assertAlmostEqual(p(x0),N.exp(-x0**2)*N.sin(x0))
+        self.assertAlmostEqual(p.Df(x1),N.exp(-x1**2)*(-2*x1*N.sin(x1) + N.cos(x1)))
 
         # test 6D case (arbitrary dimension) at x = zeros (possible edge case)
         dimen=6
@@ -152,7 +156,7 @@ class TestFunctions(unittest.TestCase):
         x0=N.zeros(dimen)
         self.assertEqual(p(x0),0.0)
         Df = p.Df(x0)
-        sol = N.matrix(N.ones(dimen))
+        sol = N.matrix(N.zeros(dimen))
         N.testing.assert_array_almost_equal(Df, sol)
 
 if __name__ == '__main__':

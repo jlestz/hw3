@@ -127,17 +127,19 @@ class ExpSin(object):
             sumSq = sumSq + x[i,0]**2
             prod = prod*x[i,0]
         for i in range(nx): 
-            if x[i] > 1e-10: 
+            if x[i,0] > 1e-10: 
                 Df_x[0,i] = N.exp(-sumSq)*(-2*x[i,0]*N.sin(prod) + prod*N.cos(prod)/x[i,0])
             # since partial derivative w.r.t x_i has a term like prod/x_i, x_i = 0 case is treated separately
             else: 
                 subProd = 1
                 for j in range(nx): 
                     if j != i: 
-                        prod = prod*x[j,0]
+                        subProd = subProd*x[j,0]
                 Df_x[0,i] = N.exp(-sumSq)*(-2*x[i,0]*N.sin(prod) + subProd*N.cos(prod))
 
         return Df_x
     
     def __call__(self, x):
         return self.f(x)
+
+
