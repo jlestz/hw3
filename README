@@ -76,11 +76,61 @@ ExpSin(dimen) is a product of exponential decay and a sin function in n dimensio
 === testNewton.py ===
 =====================
 
-testNewton.py contains unit tests for the functions in newton.py. The tests are grouped by functionality below: 
+testNewton.py contains unit tests for the functions in newton.py. The tests are grouped by functionality below. See testNewton.py for more detailed descriptions of each test. Note that some of these classifications are arbitrary, as accurate solutions of complex functions also implies a great likelihood that the individual steps were accurate, etc. 
 
-1. 
+1. Single Newton-Raphson step is accurate 
+    testStep: single step of f(x)=x+1 returns correct value 
 
-2. 
+2. Newton-Raphson solutions are accurate 
+    A. For functions of R^1 --> R^1
+        testLinear: 3x + 6 has correct solution 
+        testTrig: sinx,cosx have correct solutions 
+        testAiry: Airy function has correct solution
+    B. For functions of R^N --> R^M (N,M not both 1) 
+        testSolution3D: solves R^3-->R^3 linear system 
+        testExpSinSolve: solves R^2-->R^1 ExpSin zeros
 
-3. 
+3. Exception raised after maxiters 
+    testNoRoot: x^2 + 1,maxiter=100 raises exception 
+    testMaxItersReached: f=x^2,x0=1,maxiter=2 raises exception 
+    testMaxItersNotReached: f=x^2,x0=1,maxiter=3 finds solution 
+    testExpMaxIters: f=e^x,maxiter=3,r=4, halts due to maxiter
 
+4. Analytic Jacobian is used when Df specified 
+    testAnalSin: f=N.sin,Df=N.cos, finds solution 
+    testPolyLogAnalVsNum: First step and solution of PolyLog with numerical vs analytically prescribed Jacobian are each not equal
+
+5. Exception raised when x leaves search region
+    testRadiusZero: r=0 raises exception 
+    testExpMaxRadius: f=e^x,maxiter=4,r=3, halts due to search radius
+    testStepBeyondSearch: f=x^2-1,x0=0.1,r=2, halts due to search radius
+    testStepBeyondSearchSuccess: f=x^2-1,x0=0.1,r=5, finds solution 
+
+========================
+=== testFunctions.py ===
+========================
+
+testFunctions.py contains unit tests for the functions in functions.py. The tests are grouped by functionality below. See testFunctions.py for more detailed descriptions of each test. 
+
+1. Numerically computed Jacobian is accurate 
+    A. For functions of R^1 --> R^1 
+        testApproxJacobian1: 3x + 5 has correct Jacobian
+    B. For functions of R^N --> R^M (N,M not both 1) 
+        testApproxJacobian2: R^2-->R^2 linear system has correct Jcbn
+        testApproxJacobian3: R^2-->R^1 linear system has correct Jcbn
+        testApproxJacobian4: R^1-->R^2 linear system has correct Jcbn
+
+2. Specified functions have accurate values and Jacobians 
+    testPolynomial: x^2+2x+3 Polynomial has correct values
+    testPolyLogVals: PolyLog reduces to Log, PolyLog reduces to Polynomial, nontrivial PolyLog has correct values and analytic derivatives 
+    testExpSinVals: ExpSin has correct values and analytic Jacobian
+    testExpSinInput: ExpSin works with inputs as list,np.array,np.matrix
+
+3. Analytic Jacobians match numerical approximations 
+    checkAnalJacobian: tests if analytic and numerical Jacobians are close
+    testPolynomialJacobian: Polynomial checkAnalJacobian for x=-10 to 10
+    testPolyLogJacobian: PolyLog checkAnalJacobian for x=.1 to 2
+    testExpSinJacobian: 2D ExpSin checkAnalJacobian for x,y=-2pi to 2pi
+    
+    
+to do: fix problem with ExpSin R^2 --> R^1 solution (does this occur elsewhere?) if Newton-Raphson is restricted to square functions, comment this towards the beginning of the README. Or use a hack to duplicate rows? Reread the specs to see what is intended... otherwise I think this is complete. Could also add a PolyLog solution to testNewton. 

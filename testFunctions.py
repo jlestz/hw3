@@ -59,22 +59,8 @@ class TestFunctions(unittest.TestCase):
         for x in N.linspace(-2,2,11):
             self.assertEqual(p(x), x**2 + 2*x + 3)
 
-    # test convergence of numerical Jacobian to analytic function
-    # as dx decreases, numerical error should decrease 
-    def testAnalConvergence(self): 
-        x0=1.0
-        DfAnal=N.cos(x0)
-        Df1=N.zeros(4)
-        Ddiff=Df1
-        steps = N.array([1e-2,1e-4,1e-6,1e-8])
-        for i,val in enumerate(steps): 
-            Df1[i] = F.ApproximateJacobian(N.sin,x0,dx=val)
-            Ddiff=N.absolute(Df1-DfAnal)
-            if i > 0:  
-                self.assertLess(Ddiff[i],Ddiff[i-1])
-
     # test that analytic Jacobians are close to numerical
-    # check that they match to 6 decimals when calculating Numerical Jacobian with dx = 1e-12 precision (they should agree to this precision)
+    # check that they match to at least 5 decimals when calculating Numerical Jacobian with dx = 1e-6 precision
     def checkAnalJacobian(self,fun,x,dx=1e-6):
         DfAnal = fun.Df(x)
         DfNum = F.ApproximateJacobian(fun,x,dx=dx)

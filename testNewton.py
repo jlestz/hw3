@@ -198,5 +198,27 @@ class TestNewton(unittest.TestCase):
         self.assertNotEqual(x1Anal,x1Num) 
         self.assertEqual(xSolAnal,xSolNum)
 
+    # tests solution for a 3D linear system : R^3 --> R^3
+    def testSolution3D(self):
+        A = N.matrix("8. 1. 6. ; 3. 5. 7. ; 4. 9. 2.")
+        b = N.matrix("1. ; 2.; 3.")
+        def f(x):
+            return A * x - b
+        x0 = N.matrix("0; 0; 0")
+        y = N.matrix("0.05; 0.3; 0.05"); 
+        solver=newton.Newton(f); 
+        xsol=solver.solve(x0); 
+        N.testing.assert_array_almost_equal(xsol, y)
+
+    # tests solution of 2D ExpSin
+    # currently fails due to non-squareness... is this really not a problem with any of the other tests???
+    def testExpSinSolve(self): 
+        x0=N.array([0.1,0.1]);
+        f=F.ExpSin(2); 
+        solver=newton.Newton(f,Df=f.Df); 
+        xsol=solver.solve(x0); 
+        y = N.array([0.0,0.0]);
+        N.testing.assert_array_almost_equal(xsol,y); 
+
 if __name__ == "__main__":
     unittest.main()
