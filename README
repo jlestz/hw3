@@ -48,7 +48,7 @@ xsol=solver.solve(x0,r=2)
 === functions.py ===
 ====================
 
-functions.py contains functions to compute Jacobians numerically, polynomials, and two special functions: "PolyLog"s and "ExpSin"s. 
+functions.py contains functions to compute Jacobians numerically, polynomials, and three special functions: "PolyLog"s, "ExpSin"s, and "Trig"s
 
 To compute a numerical Jacobian (first order accurate, forward difference), call: 
 ~~~ 
@@ -58,7 +58,7 @@ f is the function whose Jacobian you want to calculate numerically
 x is the point to evaluate the Jacobian at 
 dx is the step size to use in the forward difference method 
 
-Polynomial, PolyLog, and ExpSin classes each have the following functions: 
+Polynomial, PolyLog, ExpSin, Trig classes each have the following functions:
 1. f(x) -- returns the function at x (duplicated by __call__) 
 2. Df(x) -- returns the analytic Jacobian at x
 Each of these functions can be evaluated at x specified by a numpy array or matrix of the correct dimension. 
@@ -71,6 +71,10 @@ PolyLog(coeffs,power) is a product of a polynomial and a (natural) logarithm rai
 
 ExpSin(dimen) is a product of exponential decay and a sin function in n dimensions defined by: 
     P(x) = exp(-sum_{i=0}^{dimen-1} x_i^2) * sin(prod_{i=0}^{dimen-1} x_i)
+
+Trig() is a 2D vector-valued function of elementary trig functions: 
+    Suppose z = [x,y], then 
+    P(z) = [ [Cos(x-y)],[Sin(x+y)] ]
 
 =====================
 === testNewton.py ===
@@ -87,8 +91,8 @@ testNewton.py contains unit tests for the functions in newton.py. The tests are 
         testTrig: sinx,cosx have correct solutions 
         testAiry: Airy function has correct solution
     B. For functions of R^N --> R^M (N,M not both 1) 
+        testSolution2D: solves R^2-->R^2 Trig() function
         testSolution3D: solves R^3-->R^3 linear system 
-        testExpSinSolve: solves R^2-->R^1 ExpSin zeros
 
 3. Exception raised after maxiters 
     testNoRoot: x^2 + 1,maxiter=100 raises exception 
@@ -131,6 +135,3 @@ testFunctions.py contains unit tests for the functions in functions.py. The test
     testPolynomialJacobian: Polynomial checkAnalJacobian for x=-10 to 10
     testPolyLogJacobian: PolyLog checkAnalJacobian for x=.1 to 2
     testExpSinJacobian: 2D ExpSin checkAnalJacobian for x,y=-2pi to 2pi
-    
-    
-to do: fix problem with ExpSin R^2 --> R^1 solution (does this occur elsewhere?) if Newton-Raphson is restricted to square functions, comment this towards the beginning of the README. Or use a hack to duplicate rows? Reread the specs to see what is intended... otherwise I think this is complete. Could also add a PolyLog solution to testNewton. 

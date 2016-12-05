@@ -203,22 +203,31 @@ class TestNewton(unittest.TestCase):
         A = N.matrix("8. 1. 6. ; 3. 5. 7. ; 4. 9. 2.")
         b = N.matrix("1. ; 2.; 3.")
         def f(x):
-            return A * x - b
-        x0 = N.matrix("0; 0; 0")
-        y = N.matrix("0.05; 0.3; 0.05"); 
+            x=N.matrix(x); 
+            x=N.reshape(x,(N.size(x),1))
+            ans = A * x - b
+            return N.reshape(ans,(N.size(ans),1))
+        x0 = N.matrix("0, 0, 0")
+        y = N.matrix("0.05, 0.3, 0.05"); 
         solver=newton.Newton(f); 
         xsol=solver.solve(x0); 
         N.testing.assert_array_almost_equal(xsol, y)
 
-    # tests solution of 2D ExpSin
-    # currently fails due to non-squareness... is this really not a problem with any of the other tests???
-    def testExpSinSolve(self): 
-        x0=N.array([0.1,0.1]);
-        f=F.ExpSin(2); 
-        solver=newton.Newton(f,Df=f.Df); 
-        xsol=solver.solve(x0); 
-        y = N.array([0.0,0.0]);
-        N.testing.assert_array_almost_equal(xsol,y); 
+    # tests solution for a 2D vector-valued function 
+    def testSolution2D(self): 
+        x0 = [1.1,2.2]
+        f = F.Trig(); 
+        solver=newton.Newton(f); 
+        xsol=solver.solve(x0);
+        x=xsol[0,0]; 
+        y=xsol[0,1];
+        s = x+y
+        d = x-y
+        stest = s/N.pi; 
+        dtest = (d/N.pi) - 0.5; 
+        # compare to analytic solutions for cos(x-y)=0,sin(x+y)=0
+        self.assertAlmostEqual(stest,round(stest))
+        self.assertAlmostEqual(dtest,round(dtest))
 
 if __name__ == "__main__":
     unittest.main()

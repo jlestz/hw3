@@ -20,10 +20,11 @@ class Newton(object):
         self._dx = dx
         self._Df = Df
 
-
     def solve(self, x0, r=float("inf")):
         """Return a root of f(x) = 0, using Newton's method, starting from
         initial guess x0"""
+        x0=N.matrix(x0)
+        x0=N.reshape(x0,(1,N.size(x0)))
         x = x0
         for i in xrange(self._maxiter+1):
             fx = self._f(x)
@@ -51,6 +52,8 @@ class Newton(object):
         else: 
             # analytic Jacobian option 
             Df_x = Df(x) 
-
+        
         h = N.linalg.solve(N.matrix(Df_x), N.matrix(fx))
+        h=N.reshape(h,(1,N.size(h)))
+        
         return x - h

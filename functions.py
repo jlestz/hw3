@@ -142,4 +142,35 @@ class ExpSin(object):
     def __call__(self, x):
         return self.f(x)
 
+class Trig(object):
+    """Callable object of the form cos(x-y),sin(x+y), e.g. call of Trig() creates the above function""" 
+
+    def __repr__(self):
+        return "Cos(x-y),Sin(x+y)" 
+
+    def __init__(self):
+        pass
+
+    def f(self,z):
+        z = N.matrix(z);
+        z = N.reshape(z,(1,2)); 
+        x = z[0,0]
+        y = z[0,1]
+        
+        f1 = N.cos(x - y)
+        f2 = N.sin(x + y) 
+        return N.matrix([ [f1],[f2] ])
+
+    def Df(self,z):
+        z = N.matrix(z);
+        z = N.reshape(z,(1,2)); 
+        x = z[0,0]
+        y = z[0,1]
+        
+        c = N.cos(x+y)
+        s = N.sin(x-y) 
+        return N.matrix([ [-s,s],[c,c] ])
+    
+    def __call__(self, x):
+        return self.f(x)
 
